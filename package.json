@@ -1,0 +1,31 @@
+{
+  "name": "copy-all-files-vscode-extension",
+  "displayName": "Copy All Files",
+  "description": "Copy all files from workspace to clipboard with custom format",
+  "version": "0.1.2",
+  "publisher": "brianuceda",
+  "license": "MIT",
+	"icon": "images/copy-all-files-vscode-extension-logo.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/brianuceda/copy-all-files-vscode-extension"
+	},
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "copy-all-files.copyFiles",
+        "title": "Copy All Files to Clipboard"
+      }
+    ]
+  }
+}
