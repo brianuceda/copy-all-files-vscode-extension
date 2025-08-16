@@ -11,6 +11,10 @@
    vsce login brianuceda
    ```
 
+## Marketplace URLs
+
+- **Publisher Dashboard**: https://marketplace.visualstudio.com/manage/publishers/brianuceda
+
 ## Publish New Version
 
 ```bash
@@ -23,4 +27,3 @@ vsce publish
 - **Package only**: `vsce package`
 - **Publish patch**: `vsce publish patch` (0.1.x → 0.1.y)
 - **Publish minor**: `vsce publish minor` (0.1.x → 0.2.0)
-- **List publishers**: `vsce ls-publishers`
