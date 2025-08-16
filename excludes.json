@@ -33,7 +33,8 @@
       "*.temp",
       "Thumbs.db",
       ".DS_Store",
-      "desktop.ini"
+      "desktop.ini",
+      "package-lock.json"
     ],
     "extensions": [
       "*.exe",
