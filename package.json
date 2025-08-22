@@ -25,6 +25,10 @@
       {
         "command": "copy-all-files.copyFiles",
         "title": "Copy All Files to Clipboard"
+      },
+      {
+        "command": "copy-all-files.copyTree",
+        "title": "Copy Project Structure (Tree) to Clipboard"
       }
     ]
   }
