@@ -23,4 +23,3 @@
 - **Publish minor**: `vsce publish minor` (0.1.x → 0.2.0)
 
 - **Package only**: `vsce package`
-- **Publish patch**: `vsce publish`
