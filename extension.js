@@ -2,7 +2,8 @@ const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
 
-let statusBarItem;
+let contentStatusBarItem;
+let treeStatusBarItem;
 
 function loadExcludesConfig() {
   try {
@@ -346,15 +347,24 @@ async function copyProjectTree() {
   }
 }
 
-function createStatusBarItem() {
-  statusBarItem = vscode.window.createStatusBarItem(
+function createStatusBarItems() {
+  contentStatusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    101
+  );
+  contentStatusBarItem.text = "$(copy)";
+  contentStatusBarItem.tooltip = "Copy All Files Content to Clipboard";
+  contentStatusBarItem.command = "copy-all-files.copyFiles";
+  contentStatusBarItem.show();
+
+  treeStatusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
     100
   );
-  statusBarItem.text = "$(copy)";
-  statusBarItem.tooltip = "Copy All Files Content to Clipboard";
-  statusBarItem.command = "copy-all-files.copyFiles";
-  statusBarItem.show();
+  treeStatusBarItem.text = "$(list-tree)";
+  treeStatusBarItem.tooltip = "Copy Project Structure (Tree) to Clipboard";
+  treeStatusBarItem.command = "copy-all-files.copyTree";
+  treeStatusBarItem.show();
 }
 
 function setupFileWatcher(context) {
@@ -390,7 +400,7 @@ function setupFileWatcher(context) {
 
 function activate(context) {
   createIgnoreDirectory();
-  createStatusBarItem();
+  createStatusBarItems();
   setupFileWatcher(context);
 
   const copyContentDisposable = vscode.commands.registerCommand(
@@ -405,13 +415,17 @@ function activate(context) {
   context.subscriptions.push(
     copyContentDisposable,
     copyTreeDisposable,
-    statusBarItem
+    contentStatusBarItem,
+    treeStatusBarItem
   );
 }
 
 function deactivate() {
-  if (statusBarItem) {
-    statusBarItem.dispose();
+  if (contentStatusBarItem) {
+    contentStatusBarItem.dispose();
+  }
+  if (treeStatusBarItem) {
+    treeStatusBarItem.dispose();
   }
 }
 

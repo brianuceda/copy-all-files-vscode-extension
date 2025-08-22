@@ -1,29 +1,86 @@
-# Copy All Files - VS Code Extension
+# Copy All Files
 
-## Login & Setup
+A simple VS Code extension to copy file contents or the project structure (tree) to your clipboard, with customizable ignore rules.
 
-1. **Azure DevOps**: https://dev.azure.com/
-2. **Create Personal Access Token**: https://dev.azure.com/[organization]/_usersSettings/tokens
-   - Scopes: **Marketplace** → **Manage**
-3. **Login**:
-   ```bash
-   npm install -g @vscode/vsce
-   vsce login brianuceda
-   ```
+## Usage
 
-## Marketplace URLs
+-   **Copy Content**: Click the **`$(copy)`** icon in the status bar. This copies the text content of all allowed files.
 
-- **Publisher Dashboard**: https://marketplace.visualstudio.com/manage/publishers/brianuceda
+-   **Copy Tree**: Run `Copy Project Structure (Tree)` from the Command Palette (`Ctrl+Shift+P`). This copies the visual layout of your files and folders.
 
-## Publish New Version
+---
 
-```bash
-# Change version in package.json (0.1.x)
-vsce publish
+## Configuration
+
+You can add custom ignore rules by editing the `.vscode/copy-all-files/ignore.txt` file in your workspace. It will be created with the following default content:
+
+```ini
+# Add relative paths to ignore, one per line
+Examples:
+prueba\test.py
+src\temp
+docs\draft.md
+*.backup
+temp-folder
+specific-file.txt
+logs\*.log
+build\output
 ```
 
-## Commands
+## Example
 
-- **Package only**: `vsce package`
-- **Publish patch**: `vsce publish patch` (0.1.x → 0.1.y)
-- **Publish minor**: `vsce publish minor` (0.1.x → 0.2.0)
+Given the following project structure:
+
+```ini
+my-project/
+├── src/
+│   ├── index.js
+│   └── styles.css
+├── images/
+│   └── logo.png
+└── package.json
+```
+
+### Content Output
+
+The **Copy Content** command will generate this in your clipboard, ignoring the `.png` file:
+
+```ini
+# src/index.js
+
+console.log("Hello1!");
+console.log("Hello2!");
+console.log("Hello3!");
+console.log("Hello4!");
+
+---
+
+# src/styles.css
+
+body {
+  margin: 0;
+}
+
+---
+
+# package.json
+
+{
+  "name": "my-project",
+  "version": "1.0.0"
+}
+```
+
+### Tree Output
+
+The **Copy Tree** command will generate this, showing the file structure including the `.png`:
+
+```ini
+my-project/
+├── src/
+│   ├── index.js
+│   └── styles.css
+├── images/
+│   └── logo.png
+└── package.json
+```
