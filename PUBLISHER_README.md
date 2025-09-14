@@ -12,7 +12,7 @@
 
    ```bash
    npm install -g @vscode/vsce
-   vsce login ...
+   vsce login brianuceda
    ```
 
 ## Publish New Version

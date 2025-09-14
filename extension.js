@@ -203,7 +203,7 @@ function getAllFiles(dirPath, basePath, ignorePatterns = [], excludesConfig) {
         .replace(/\\/g, "/");
 
       if (
-        shouldIgnoreFile(relativePath, ignorePatterns, excludesConfig, true)
+        shouldIgnoreFile(relativePath, ignorePatterns, excludesConfig, false)
       ) {
         continue;
       }
@@ -213,11 +213,21 @@ function getAllFiles(dirPath, basePath, ignorePatterns = [], excludesConfig) {
         results = results.concat(
           getAllFiles(fullPath, basePath, ignorePatterns, excludesConfig)
         );
-      } else if (stat.isFile() && isTextFile(fullPath, excludesConfig)) {
-        results.push({
-          path: fullPath,
-          relativePath: relativePath,
-        });
+      } else if (stat.isFile()) {
+        if (
+          !shouldIgnoreFile(
+            relativePath,
+            ignorePatterns,
+            excludesConfig,
+            true
+          ) &&
+          isTextFile(fullPath, excludesConfig)
+        ) {
+          results.push({
+            path: fullPath,
+            relativePath: relativePath,
+          });
+        }
       }
     }
   } catch (error) {
