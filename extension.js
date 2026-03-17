@@ -266,7 +266,7 @@ async function copyAllFiles() {
     for (const file of files) {
       try {
         const fileContent = fs.readFileSync(file.path, "utf8");
-        content += `# ${file.relativePath}\n\n${fileContent}\n\n---\n\n`;
+        content += `# ${file.relativePath.replace(/\//g, "\\")}\n\n${fileContent}\n\n---\n\n`;
       } catch (error) {
         console.error(`Error reading file ${file.path}:`, error);
       }
@@ -355,7 +355,7 @@ async function copySelectedFiles(clickedUri, selectedUris) {
   for (const file of filePaths) {
     try {
       const fileContent = fs.readFileSync(file.path, "utf8");
-      content += `# ${file.relativePath}\n\n${fileContent}\n\n---\n\n`;
+      content += `# ${file.relativePath.replace(/\//g, "\\")}\n\n${fileContent}\n\n---\n\n`;
     } catch (error) {
       console.error(`Error reading file ${file.path}:`, error);
     }
