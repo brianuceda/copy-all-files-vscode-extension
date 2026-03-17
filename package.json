@@ -2,7 +2,7 @@
   "name": "copy-all-files-vscode-extension",
   "displayName": "Copy All Files",
   "description": "Copy all files from workspace to clipboard with custom format",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "brianuceda",
   "license": "MIT",
   "icon": "images/copy-all-files-vscode-extension-logo.png",
@@ -29,7 +29,19 @@
       {
         "command": "copy-all-files.copyTree",
         "title": "Copy Project Structure (Tree) to Clipboard"
+      },
+      {
+        "command": "copy-all-files.copySelectedFiles",
+        "title": "Copy Content of Selected Files"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "copy-all-files.copySelectedFiles",
+          "group": "6_copypath@30"
+        }
+      ]
+    }
   }
 }

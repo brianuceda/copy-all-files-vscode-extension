@@ -4,6 +4,7 @@ const path = require("path");
 
 let contentStatusBarItem;
 let treeStatusBarItem;
+let selectedStatusBarItem;
 
 function loadExcludesConfig() {
   try {
@@ -284,6 +285,69 @@ async function copyAllFiles() {
   }
 }
 
+async function copySelectedFiles(clickedUri, selectedUris) {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) {
+    vscode.window.showErrorMessage("No hay workspace abierto");
+    return;
+  }
+
+  const workspacePath = workspaceFolders[0].uri.fsPath;
+
+  let urisToProcess = [];
+  if (selectedUris && selectedUris.length > 0) {
+    urisToProcess = selectedUris;
+  } else if (clickedUri) {
+    urisToProcess = [clickedUri];
+  } else {
+    vscode.window.showWarningMessage("No se seleccionaron archivos");
+    return;
+  }
+
+  const excludesConfig = loadExcludesConfig();
+  const ignorePatterns = getIgnorePatterns();
+
+  let filePaths = [];
+  for (const uri of urisToProcess) {
+    const fsPath = uri.fsPath;
+    try {
+      const stat = fs.statSync(fsPath);
+      if (stat.isDirectory()) {
+        const dirFiles = getAllFiles(fsPath, workspacePath, ignorePatterns, excludesConfig);
+        filePaths = filePaths.concat(dirFiles);
+      } else if (stat.isFile()) {
+        const relativePath = path.relative(workspacePath, fsPath).replace(/\\/g, "/");
+        filePaths.push({ path: fsPath, relativePath });
+      }
+    } catch (error) {
+      console.error(`Error accessing ${fsPath}:`, error);
+    }
+  }
+
+  if (filePaths.length === 0) {
+    vscode.window.showWarningMessage("No se encontraron archivos de texto para copiar");
+    return;
+  }
+
+  let content = "";
+  for (const file of filePaths) {
+    try {
+      const fileContent = fs.readFileSync(file.path, "utf8");
+      content += `# ${file.relativePath}\n\n${fileContent}\n\n---\n\n`;
+    } catch (error) {
+      console.error(`Error reading file ${file.path}:`, error);
+    }
+  }
+
+  content = content.replace(/---\n\n$/, "");
+  await vscode.env.clipboard.writeText(content);
+  vscode.window.showInformationMessage(
+    filePaths.length === 1
+      ? `Copiado el contenido de "${filePaths[0].relativePath}"`
+      : `Copiado el contenido de ${filePaths.length} archivos`
+  );
+}
+
 function getProjectTreeRecursive(
   dirPath,
   basePath,
@@ -421,10 +485,15 @@ function activate(context) {
     "copy-all-files.copyTree",
     copyProjectTree
   );
+  const copySelectedDisposable = vscode.commands.registerCommand(
+    "copy-all-files.copySelectedFiles",
+    copySelectedFiles
+  );
 
   context.subscriptions.push(
     copyContentDisposable,
     copyTreeDisposable,
+    copySelectedDisposable,
     contentStatusBarItem,
     treeStatusBarItem
   );
