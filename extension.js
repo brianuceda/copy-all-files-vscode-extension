@@ -266,7 +266,7 @@ async function copyAllFiles() {
     for (const file of files) {
       try {
         const fileContent = fs.readFileSync(file.path, "utf8");
-        content += `# ${file.relativePath}\n\n${fileContent}\n\n---\n\n`;
+        content += `# ${file.relativePath.replace(/\//g, "\\")}\n\n${fileContent}\n\n---\n\n`;
       } catch (error) {
         console.error(`Error reading file ${file.path}:`, error);
       }
@@ -285,6 +285,13 @@ async function copyAllFiles() {
   }
 }
 
+function normalizeUri(u) {
+  if (!u) return null;
+  if (u.fsPath) return u;
+  if (u.uri && u.uri.fsPath) return u.uri;
+  return null;
+}
+
 async function copySelectedFiles(clickedUri, selectedUris) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
@@ -293,13 +300,28 @@ async function copySelectedFiles(clickedUri, selectedUris) {
   }
 
   const workspacePath = workspaceFolders[0].uri.fsPath;
+  const clickedUriNorm = normalizeUri(clickedUri);
 
   let urisToProcess = [];
-  if (selectedUris && selectedUris.length > 0) {
-    urisToProcess = selectedUris;
-  } else if (clickedUri) {
-    urisToProcess = [clickedUri];
+
+  // Desde el Explorer, selectedUris viene populado correctamente
+  if (selectedUris && Array.isArray(selectedUris) && selectedUris.length > 0) {
+    urisToProcess = selectedUris.map(normalizeUri).filter(Boolean);
   } else {
+    // Desde las pestañas: copiar todos los archivos abiertos
+    for (const group of vscode.window.tabGroups.all) {
+      for (const tab of group.tabs) {
+        if (tab.input && tab.input.uri) {
+          urisToProcess.push(tab.input.uri);
+        }
+      }
+    }
+    if (urisToProcess.length === 0 && clickedUriNorm) {
+      urisToProcess = [clickedUriNorm];
+    }
+  }
+
+  if (urisToProcess.length === 0) {
     vscode.window.showWarningMessage("No se seleccionaron archivos");
     return;
   }
@@ -333,7 +355,7 @@ async function copySelectedFiles(clickedUri, selectedUris) {
   for (const file of filePaths) {
     try {
       const fileContent = fs.readFileSync(file.path, "utf8");
-      content += `# ${file.relativePath}\n\n${fileContent}\n\n---\n\n`;
+      content += `# ${file.relativePath.replace(/\//g, "\\")}\n\n${fileContent}\n\n---\n\n`;
     } catch (error) {
       console.error(`Error reading file ${file.path}:`, error);
     }
